@@ -7,9 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<BookUpsertJob>();
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+//builder.Services.a
 
 builder.Services.AddDbContext<ApplicationDbContext>(options 
     => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -17,12 +21,26 @@ builder.Services.AddDbContext<ApplicationDbContext>(options
 builder.Services.AddHangfire(config => config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddHangfireServer();
 
-builder.Services.AddScoped<BookUpsertJob>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
-builder.Services.AddScoped<IBookService, BookService>();
-
+builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseCors(policy =>
+    policy.AllowAnyOrigin()
+          .AllowAnyMethod()
+          .AllowAnyHeader());
+
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
