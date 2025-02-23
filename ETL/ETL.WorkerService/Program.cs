@@ -31,51 +31,29 @@ using ETL.Application.Interfaces;
 using ETL.Jobs.Services;
 using ETL.WorkerService;
 using ETL.Infrastructure.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Builder;
-using ETL.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore;
 
-//var builder = Host.CreateDefaultBuilder(args);
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<BookUpsertJob>();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options
-    => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var builder = Host.CreateDefaultBuilder(args);
 
 
-//builder.ConfigureServices((hostContext, services) =>
-//{
-//    var configuration = hostContext.Configuration;
+builder.ConfigureServices((hostContext, services) =>
+{
+    var configuration = hostContext.Configuration;
 
-//    // Hangfire Configuration
-//    services.AddHangfire(config =>
-//        config.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+    // Hangfire Configuration
+    services.AddHangfire(config =>
+        config.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
 
-//    services.AddHangfireServer();
+    services.AddHangfireServer();
 
-//    // Register Application Services
-//    //services.AddScoped<IBookService, BookService>();
-//    services.AddScoped<BookUpsertJob>();
+    // Register Application Services
+    //services.AddScoped<IBookService, BookService>();
+    services.AddScoped<BookUpsertJob>();
 
-//    services.AddHostedService<Worker>();
+    services.AddHostedService<Worker>();
 
-//    //services.AddScoped<BookUpsertJob>();
+    //services.AddScoped<BookUpsertJob>();
 
-//});
-
-// Hangfire Configuration
-builder.Services.AddHangfire(config =>
-    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddHangfireServer();
-
-// Register Application Services
-
-
-builder.Services.AddHostedService<Worker>();
+});
 
 var app = builder.Build();
 

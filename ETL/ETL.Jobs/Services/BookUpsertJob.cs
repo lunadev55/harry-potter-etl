@@ -9,8 +9,7 @@ public class BookUpsertJob
 {
     private readonly IBookService _bookService;
     private readonly ILogger<BookUpsertJob> _logger;
-    //private const string ApiUrl = "https://hp-api.onrender.com/api/books";
-    private const string ApiUrl = "https://potterapi-fedeperin.vercel.app/en/books";
+    private const string ApiUrl = "https://hp-api.onrender.com/api/books";
 
     public BookUpsertJob(IBookService bookService, ILogger<BookUpsertJob> logger)
     {
